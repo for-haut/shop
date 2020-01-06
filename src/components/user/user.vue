@@ -156,13 +156,18 @@
       </span>
     </el-dialog>
     <!-- 分配角色 -->
-    <el-dialog title="分配角色" :visible.sync="showRole" width="50%">
+    <el-dialog
+      title="分配角色"
+      :visible.sync="showRole"
+      width="50%"
+      @close="closeRole"
+    >
       <div>
         <p>当前的用户: {{ userInfo.username }}</p>
         <p>当前的角色: {{ userInfo.role_name }}</p>
         <p>
           分配新角色:
-          <el-select v-model="selectRole" placeholder="请选择" clearable>
+          <el-select v-model="selectRole" placeholder="请选择">
             <el-option
               v-for="item in roleList"
               :key="item.id"
@@ -175,7 +180,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showRole = false">取 消</el-button>
-        <el-button type="primary" @click="showRole = false">确 定</el-button>
+        <el-button type="primary" @click="allotRole">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -373,6 +378,7 @@ export default {
       this.$message.success('删除成功！')
       this.getUser()
     },
+    // 弹出分配角色对话框
     async setRole(userInfo) {
       this.userInfo = userInfo
       // 在弹出对话框之前获取所有角色列表
@@ -382,6 +388,28 @@ export default {
       }
       this.roleList = res.data
       this.showRole = true
+    },
+    async allotRole() {
+      if (!this.selectRole) {
+        return this.$message.error('请选择要分配的角色！')
+      }
+      const { data: res } = await this.$http.put(
+        `users/${this.userInfo.id}/role`,
+        {
+          rid: this.selectRole
+        }
+      )
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      this.$message.success('分配用户角色成功！')
+      this.getUser()
+      this.showRole = false
+    },
+    // 清空下拉菜单
+    closeRole() {
+      this.selectRole = ''
+      this.userInfo = ''
     }
   }
 }
