@@ -11,8 +11,17 @@
       <!-- 搜索框 -->
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input
+            placeholder="请输入内容"
+            v-model="queryInfo.query"
+            clearable
+            @clear="getGoods"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="getGoods"
+            ></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
@@ -33,23 +42,31 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="130">
-          <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="mini"
-          ></el-button>
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="listDel(scope.row.goods_id)"
+            ></el-button>
+          </template>
         </el-table-column>
       </el-table>
       <!-- 分页区域 -->
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[2, 5, 8, 10]"
-        :page-size="queryInfo.pagenum"
+        :current-page="queryInfo.pagenum"
+        :page-sizes="[5, 10, 15, 20]"
+        :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
+        background
       >
       </el-pagination>
     </el-card>
@@ -64,7 +81,7 @@ export default {
       queryInfo: {
         query: '',
         pagenum: 1,
-        pagesize: 8
+        pagesize: 10
       },
       // 商品列表
       goodsList: [],
@@ -76,6 +93,7 @@ export default {
     this.getGoods()
   },
   methods: {
+    // 获取商品列表数据
     async getGoods() {
       const { data: res } = await this.$http.get('goods', {
         params: this.queryInfo
@@ -91,13 +109,34 @@ export default {
       this.queryInfo.pagesize = newSize
       this.getGoods()
     },
-    handleCurrentChange(newNum) {
-      this.queryInfo.pagenum = newNum
+    handleCurrentChange(newPage) {
+      this.queryInfo.pagenum = newPage
       this.getGoods()
     },
     // 跳转到添加商品页面
     goAddPage() {
       this.$router.push('/goods/add')
+    },
+    // 删除商品
+    async listDel(id) {
+      const listDel = await this.$confirm(
+        '此操作将永久删除该文件, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(err => err)
+      if (listDel !== 'confirm') {
+        return this.$message.info('已取消删除！')
+      }
+      const { data: res } = await this.$http.delete('goods/' + id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除商品失败！')
+      }
+      this.$message.success('删除商品成功！')
+      this.getGoods()
     }
   }
 }

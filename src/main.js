@@ -6,7 +6,14 @@ import './plugins/element.js'
 import './assets/css/gobal.css'
 // 字体图标
 import './assets/fonts/iconfont.css'
+// 树形表格
 import TreeTable from 'vue-table-with-tree-grid'
+// 富文本编辑器
+import VueQuillEditor from 'vue-quill-editor'
+// 富文本编辑器样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 // 请求根路径
 import axios from 'axios'
@@ -23,18 +30,19 @@ Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 Vue.component('tree-table', TreeTable)
+// 全局挂载富文本编辑器
+Vue.use(VueQuillEditor)
 
-// 时间过滤器
+// 格式化时间
 Vue.filter('dateFormat', function(date) {
   const dt = new Date(date)
   const y = dt.getFullYear()
   const m = (dt.getMonth() + 1 + '').padStart(2, '0')
   const d = (dt.getDate() + '').padStart(2, '0')
-
   const hh = (dt.getHours() + '').padStart(2, '0')
   const mm = (dt.getMinutes() + '').padStart(2, '0')
   const ss = (dt.getSeconds() + '').padStart(2, '0')
-  return `${y}-${m}-${d} ${hh}:${mm}:${ss} `
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
 })
 
 new Vue({

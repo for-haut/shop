@@ -72,7 +72,6 @@ export default {
       this.$refs.loginRef.validate(async val => {
         if (!val) return
         const { data: res } = await this.$http.post('login', this.loginForm)
-        console.log(res.data.token)
         if (res.meta.status !== 200) return this.$message.error('登陆失败')
         this.$message.success('登录成功')
         // 登录 -- 记录token

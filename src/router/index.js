@@ -25,10 +25,10 @@ const routes = [
       { path: '/users', component: user },
       { path: '/roles', component: role },
       { path: '/rights', component: right },
-      { path: '/goods', component: list },
-      { path: '/goods/add', component: add },
+      { path: '/categories', component: cate },
       { path: '/params', component: params },
-      { path: '/categories', component: cate }
+      { path: '/goods', component: list },
+      { path: '/goods/add', component: add }
     ]
   }
 ]
